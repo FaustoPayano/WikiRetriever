@@ -3,47 +3,61 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:WikiRetriever"
         mc:Ignorable="d"
-        WindowStyle="ThreeDBorderWindow"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
+        Title="Wiki Article Retriever" Height="350" Width="525"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{StaticResource MaterialDesignFont}"
+        >
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.CheckBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ListBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.RadioButton.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToggleButton.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid VerticalAlignment="Top">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="20"/>
+            <RowDefinition Height="10"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*" MinWidth="250"/>
+            <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-
-        <Menu Grid.Row="0" Grid.ColumnSpan="5" IsMainMenu="True">
-            <MenuItem Header="_File"/>
-            <MenuItem Header="_Options"/>
-            <MenuItem Header="_About"/>
-        </Menu>
         <StackPanel Grid.Row="1" Grid.Column="0">
             <StackPanel Orientation="Horizontal">
-                <Label Content="Path to file:" Margin="10 0 10 0"/>
-                <TextBlock Text="Click here to add list.." VerticalAlignment="Center" HorizontalAlignment="Center" MouseDown="UIElement_OnMouseDown"/>
+                <TextBox x:Name="InputListBox"
+                             materialDesign:TextFieldAssist.Hint="List Path" materialDesign:TextFieldAssist.HintOpacity=".5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
             </StackPanel>
         </StackPanel>
-    <StackPanel Grid.Row="1" Grid.Column="2">
-            <Button Width="125" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10 0 10 0">
-                <Label Content="Analyze File" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            </Button>
-        </StackPanel>
-        <ListBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
-            
-        </ListBox>
-        <Button Grid.Row="4" Grid.Column="3" Margin="10 0 0 0">
-            <Label Content="Retrieve Articles"  VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10"></Label>
-        </Button>
+        <materialDesign:PopupBox Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}"
+                                         PlacementMode="BottomAndAlignCentres"
+                                         ToolTipService.Placement="Right"
+                                         ToolTip="Multiple options for ease of use." Grid.Row="1"  Grid.Column="2" Margin="0 10 10 0">
+            <StackPanel>
+                <Button ToolTip="Add the .csv file to utilize.">
+                    <materialDesign:PackIcon Kind="PlusBox"/>
+                </Button>
+                <Button ToolTip="Change the save location.">
+                    <materialDesign:PackIcon Kind="BackupRestore" />
+                </Button>
+            </StackPanel>
+        </materialDesign:PopupBox>
+
     </Grid>
 </Window>
 

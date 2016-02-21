@@ -31,17 +31,21 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="10"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MinWidth="250"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Row="1" Grid.Column="0">
+        
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
             <StackPanel Orientation="Horizontal">
                 <TextBox x:Name="InputListBox"
-                             materialDesign:TextFieldAssist.Hint="List Path" materialDesign:TextFieldAssist.HintOpacity=".5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                             materialDesign:TextFieldAssist.Hint="List Path" materialDesign:TextFieldAssist.HintOpacity=".5" 
+                         Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewMouseDown="UIElement_OnMouseDown" Text="{Binding FilePath}"
+                         
+                         />
             </StackPanel>
         </StackPanel>
         <materialDesign:PopupBox Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}"
@@ -49,15 +53,22 @@
                                          ToolTipService.Placement="Right"
                                          ToolTip="Multiple options for ease of use." Grid.Row="1"  Grid.Column="2" Margin="0 10 10 0">
             <StackPanel>
-                <Button ToolTip="Add the .csv file to utilize.">
-                    <materialDesign:PackIcon Kind="PlusBox"/>
+                <Button ToolTip="Add the .csv file to utilize." Click="ButtonBase_OnClick">
+                    <materialDesign:PackIcon Kind="PlusBox" />
                 </Button>
                 <Button ToolTip="Change the save location.">
                     <materialDesign:PackIcon Kind="BackupRestore" />
                 </Button>
             </StackPanel>
         </materialDesign:PopupBox>
-
+        <ListBox Grid.Row="2" Grid.Column="0" x:Name="SearchTermsListBox" MaxHeight="500">
+        </ListBox>
+        <StackPanel Grid.Row="2" Grid.Column="1">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Number of Entries:"></Label>
+                <TextBlock Name="CountBlock" Text="{Binding NumberOfSearchTerms}" Margin="10 5 0 0"/>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Window>
 

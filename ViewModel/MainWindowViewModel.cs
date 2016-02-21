@@ -16,9 +16,11 @@ namespace WikiRetriever.ViewModel {
     {
         private string _filePath;
         private FileInfo _file;
+        private int _numberOfSearchTerms;
 
         public MainWindowViewModel(string filePath) {
             SearchTerms = GetSearchTermCollection(filePath);
+            this.FilePath = filePath;
 
         }
 
@@ -33,13 +35,15 @@ namespace WikiRetriever.ViewModel {
             ObservableCollection<SearchTermModel> searchTermsObservableCollection = new ObservableCollection<SearchTermModel>();
             while (!reader.EndOfStream) {
                 var line = reader.ReadLine();
-                if (line != null) {
+                if (line != null && !line.Contains("club")) {
                     var results = line.Split(',');
                     searchTermsObservableCollection.Add(new SearchTermModel() {
                         Club = results[0],
                         Division = results[1],
-                        Nation = results[3]
+                        Nation = results[2]
                     });
+
+                    NumberOfSearchTerms = searchTermsObservableCollection.Count;
                 }
             }
             return searchTermsObservableCollection;
@@ -61,7 +65,17 @@ namespace WikiRetriever.ViewModel {
             }
         }
 
-        private ObservableCollection<SearchTermModel> SearchTerms { get; set; } 
+        public int NumberOfSearchTerms {
+            get { return _numberOfSearchTerms;}
+            set {
+                _numberOfSearchTerms = value;
+                OnPropertyChanged(nameof(NumberOfSearchTerms));
+            }
+        }
+
+
+
+        public ObservableCollection<SearchTermModel> SearchTerms { get; set; } 
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]

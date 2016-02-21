@@ -37,6 +37,10 @@ namespace WikiRetriever.Model {
             }
         }
 
+        public override string ToString() {
+            return $"{Club}, {Division} {Nation}";
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]

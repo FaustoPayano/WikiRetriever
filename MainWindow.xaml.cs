@@ -25,7 +25,7 @@ namespace WikiRetriever {
     public partial class MainWindow : Window {
         private MainWindowViewModel mainModel;
         private string listFilepath;
-        private string ouputSaveFilePath;
+        private string _outputSaveFilePath;
         public MainWindow() {
             InitializeComponent();            
         }
@@ -56,10 +56,33 @@ namespace WikiRetriever {
             InputListBox.DataContext = mainModel;
             SearchTermsListBox.ItemsSource = mainModel.SearchTerms;
             CountBlock.DataContext = mainModel;
+            LeftToCountBlock.DataContext = mainModel;
+            SaveOutputBox.DataContext = _outputSaveFilePath;
         }
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e) {
             UIElement_OnMouseDown(sender, e as MouseButtonEventArgs);
+        }
+
+        private void SearchAllTerms_OnClick(object sender, RoutedEventArgs e) {
+            var analysisWorker = new BackgroundWorker();
+            analysisWorker.DoWork += new DoWorkEventHandler(SearchTerms);
+            analysisWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(completedSearchTerms);
+            analysisWorker.RunWorkerAsync();
+        }
+
+        private void completedSearchTerms(object sender, RunWorkerCompletedEventArgs e) {
+        }
+
+        private void SearchTerms(object sender, DoWorkEventArgs e) {
+            mainModel.GetArticle();
+        }
+
+        private void SaveLocation_OnClick(object sender, RoutedEventArgs e) {
+            var saveFileDialog = new SaveFileDialog();
+            if (saveFileDialog.ShowDialog() == true) {
+                _outputSaveFilePath = saveFileDialog.FileName;
+            }
         }
     }
 }

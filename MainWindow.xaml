@@ -32,6 +32,7 @@
             <RowDefinition Height="10"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MinWidth="250"/>
@@ -44,9 +45,10 @@
                 <TextBox x:Name="InputListBox"
                              materialDesign:TextFieldAssist.Hint="List Path" materialDesign:TextFieldAssist.HintOpacity=".5" 
                          Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewMouseDown="UIElement_OnMouseDown" Text="{Binding FilePath}"
-                         
                          />
             </StackPanel>
+            <TextBox x:Name="SaveOutputBox"
+                     materialDesign:TextFieldAssist.Hint="Save Path" materialDesign:TextFieldAssist.HintOpacity=".5" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewMouseDown="SaveLocation_OnClick" Text="{Binding _outputSaveFilePath}"/>
         </StackPanel>
         <materialDesign:PopupBox Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}"
                                          PlacementMode="BottomAndAlignCentres"
@@ -56,17 +58,26 @@
                 <Button ToolTip="Add the .csv file to utilize." Click="ButtonBase_OnClick">
                     <materialDesign:PackIcon Kind="PlusBox" />
                 </Button>
-                <Button ToolTip="Change the save location.">
+                <Button ToolTip="Change the save location." Click="SaveLocation_OnClick">
                     <materialDesign:PackIcon Kind="BackupRestore" />
                 </Button>
+                <Button ToolTip="Search the terms loaded into the program." Click="SearchAllTerms_OnClick">
+                    <materialDesign:PackIcon Kind="CoffeeToGo"/>
+                    </Button>
             </StackPanel>
         </materialDesign:PopupBox>
         <ListBox Grid.Row="2" Grid.Column="0" x:Name="SearchTermsListBox" MaxHeight="500">
         </ListBox>
         <StackPanel Grid.Row="2" Grid.Column="1">
             <StackPanel Orientation="Horizontal">
-                <Label Content="Number of Entries:"></Label>
+                <Label Content="Number of Total Entries:"></Label>
                 <TextBlock Name="CountBlock" Text="{Binding NumberOfSearchTerms}" Margin="10 5 0 0"/>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel Grid.Row="3" Grid.Column="1">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Entries left to search:"/>
+                <TextBlock Name="LeftToCountBlock" Text="{Binding TermsLeftToAnalyze}"/>
             </StackPanel>
         </StackPanel>
     </Grid>

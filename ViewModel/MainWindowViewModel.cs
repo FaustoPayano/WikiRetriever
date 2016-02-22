@@ -6,17 +6,18 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
+using System.Windows;
+using WikipediaNET;
+using WikipediaNET.Enums;
 using WikiRetriever.Annotations;
 using WikiRetriever.Model;
 
 namespace WikiRetriever.ViewModel {
-    class MainWindowViewModel : INotifyPropertyChanged
-    {
+    class MainWindowViewModel : INotifyPropertyChanged {
         private string _filePath;
         private FileInfo _file;
         private int _numberOfSearchTerms;
+        private int _termsLeftToAnalyze;
 
         public MainWindowViewModel(string filePath) {
             SearchTerms = GetSearchTermCollection(filePath);
@@ -32,7 +33,8 @@ namespace WikiRetriever.ViewModel {
         /// <returns></returns>
         private ObservableCollection<SearchTermModel> GetSearchTermCollection(string filePath) {
             var reader = new StreamReader(System.IO.File.OpenRead(filePath));
-            ObservableCollection<SearchTermModel> searchTermsObservableCollection = new ObservableCollection<SearchTermModel>();
+            ObservableCollection<SearchTermModel> searchTermsObservableCollection =
+                new ObservableCollection<SearchTermModel>();
             while (!reader.EndOfStream) {
                 var line = reader.ReadLine();
                 if (line != null && !line.Contains("club")) {
@@ -44,6 +46,7 @@ namespace WikiRetriever.ViewModel {
                     });
 
                     NumberOfSearchTerms = searchTermsObservableCollection.Count;
+                    TermsLeftToAnalyze = searchTermsObservableCollection.Count;
                 }
             }
             return searchTermsObservableCollection;
@@ -66,22 +69,49 @@ namespace WikiRetriever.ViewModel {
         }
 
         public int NumberOfSearchTerms {
-            get { return _numberOfSearchTerms;}
+            get { return _numberOfSearchTerms; }
             set {
                 _numberOfSearchTerms = value;
                 OnPropertyChanged(nameof(NumberOfSearchTerms));
             }
         }
 
+        public int TermsLeftToAnalyze {
+            get { return _termsLeftToAnalyze; }
+            set {
+                _termsLeftToAnalyze = value;
+                OnPropertyChanged(nameof(TermsLeftToAnalyze));
+            }
+        }
 
-
-        public ObservableCollection<SearchTermModel> SearchTerms { get; set; } 
+        public ObservableCollection<SearchTermModel> SearchTerms { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+
+        }
+
+        public void GetArticle() {
+            var wiki = new Wikipedia();
+            wiki.What = What.NearMatch;
+            foreach (var searchObject in SearchTerms) {
+                var results = wiki.Search($"incategory:\"sports\" {searchObject.Club}");
+                foreach (var subresult in results.Search) {
+                    if (subresult.Title == searchObject.Club) {
+                        searchObject.WikipediaURL = subresult.Url.ToString();
+                    }
+                }
+                TermsLeftToAnalyze--;
+            }
+            StringBuilder test = new StringBuilder();
+            foreach (var searchobj in SearchTerms) {
+                test.Append($"{searchobj.WikipediaURL} \n");
+            }
+            MessageBox.Show(test.ToString());
         }
     }
 }
+

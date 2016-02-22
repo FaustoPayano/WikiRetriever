@@ -12,6 +12,7 @@ namespace WikiRetriever.Model {
         private string _club;
         private string _division;
         private string _nation;
+        private string _wikipediaURL;
 
         public string Club {
             get { return _club; }
@@ -34,6 +35,14 @@ namespace WikiRetriever.Model {
             set {
                 _nation = value;
                 OnPropertyChanged(nameof(Nation));
+            }
+        }
+
+        public string WikipediaURL {
+            get { return _wikipediaURL; }
+            set {
+                _wikipediaURL = value;
+                OnPropertyChanged(nameof(WikipediaURL));
             }
         }
 

@@ -27,7 +27,7 @@ namespace WikiRetriever {
         private string listFilepath;
         private string _outputSaveFilePath;
         public MainWindow() {
-            InitializeComponent();            
+            InitializeComponent();    
         }
 
         /// <summary>
@@ -41,29 +41,59 @@ namespace WikiRetriever {
             if (openFileDialog.ShowDialog() == true) {
                 listFilepath = openFileDialog.FileName;
                 InputListBox.DataContext = mainModel;
-                var backGroundWorker = new BackgroundWorker();
-                backGroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(ViewModelEstablished);
-                backGroundWorker.DoWork += new DoWorkEventHandler(EstablishViewModel);
-                backGroundWorker.RunWorkerAsync();
+                CreateBackgroundWorker();
             }
         }
 
+        private void CreateBackgroundWorker() {
+            var backGroundWorker = new BackgroundWorker();
+            backGroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(ViewModelEstablished);
+            backGroundWorker.DoWork += new DoWorkEventHandler(EstablishViewModel);
+            backGroundWorker.RunWorkerAsync(_outputSaveFilePath);
+        }
+        /// <summary>
+        /// Creates the view model with information from the respective controls.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void EstablishViewModel(object sender, DoWorkEventArgs e) {
-            mainModel = new MainWindowViewModel(listFilepath);
+            string tempSavePath = string.Empty;
+            if (string.IsNullOrEmpty(sender as string)) {
+                tempSavePath = AppDomain.CurrentDomain.BaseDirectory;
+                mainModel = new MainWindowViewModel(listFilepath, tempSavePath);
+            }
+            else {
+                mainModel = new MainWindowViewModel(listFilepath, _outputSaveFilePath);
+            }
         }
 
+        /// <summary>
+        /// Background worker completed event for establishing DataContexts for the different controls.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ViewModelEstablished(object sender, RunWorkerCompletedEventArgs e) {
             InputListBox.DataContext = mainModel;
             SearchTermsListBox.ItemsSource = mainModel.SearchTerms;
             CountBlock.DataContext = mainModel;
             LeftToCountBlock.DataContext = mainModel;
-            SaveOutputBox.DataContext = _outputSaveFilePath;
+            SaveOutputBox.DataContext = mainModel;
         }
 
+        /// <summary>
+        /// An alternative event for establishing the viewmodel off of the load file.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e) {
             UIElement_OnMouseDown(sender, e as MouseButtonEventArgs);
         }
 
+        /// <summary>
+        /// Initiates analysis of search terms.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SearchAllTerms_OnClick(object sender, RoutedEventArgs e) {
             var analysisWorker = new BackgroundWorker();
             analysisWorker.DoWork += new DoWorkEventHandler(SearchTerms);
@@ -74,14 +104,24 @@ namespace WikiRetriever {
         private void completedSearchTerms(object sender, RunWorkerCompletedEventArgs e) {
         }
 
+        /// <summary>
+        /// Begins retrieval of wikipedia URLS for each search term.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SearchTerms(object sender, DoWorkEventArgs e) {
             mainModel.GetArticle();
         }
 
+        /// <summary>
+        /// Establishes the save/output file path.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SaveLocation_OnClick(object sender, RoutedEventArgs e) {
             var saveFileDialog = new SaveFileDialog();
             if (saveFileDialog.ShowDialog() == true) {
-                _outputSaveFilePath = saveFileDialog.FileName;
+                mainModel.SaveFilePath = saveFileDialog.FileName;
             }
         }
     }

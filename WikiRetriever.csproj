@@ -70,6 +70,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="HelperClasses\CsvExport.cs" />
     <Compile Include="Model\SearchTermModel.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />

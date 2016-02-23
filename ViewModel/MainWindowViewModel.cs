@@ -9,19 +9,23 @@ using System.Text;
 using System.Windows;
 using WikipediaNET;
 using WikipediaNET.Enums;
+using WikipediaNET.Objects;
 using WikiRetriever.Annotations;
+using WikiRetriever.HelperClasses;
 using WikiRetriever.Model;
 
 namespace WikiRetriever.ViewModel {
     class MainWindowViewModel : INotifyPropertyChanged {
         private string _filePath;
+        private string _saveFilePath;
         private FileInfo _file;
         private int _numberOfSearchTerms;
         private int _termsLeftToAnalyze;
 
-        public MainWindowViewModel(string filePath) {
+        public MainWindowViewModel(string filePath,string savePath) {
             SearchTerms = GetSearchTermCollection(filePath);
             this.FilePath = filePath;
+            this.SaveFilePath = savePath;
 
         }
 
@@ -84,6 +88,14 @@ namespace WikiRetriever.ViewModel {
             }
         }
 
+        public string SaveFilePath {
+            get { return _saveFilePath; }
+            set {
+                _saveFilePath = value;
+                OnPropertyChanged(nameof(SaveFilePath));
+            }
+        }
+
         public ObservableCollection<SearchTermModel> SearchTerms { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -96,21 +108,29 @@ namespace WikiRetriever.ViewModel {
 
         public void GetArticle() {
             var wiki = new Wikipedia();
-            wiki.What = What.NearMatch;
-            foreach (var searchObject in SearchTerms) {
-                var results = wiki.Search($"incategory:\"sports\" {searchObject.Club}");
-                foreach (var subresult in results.Search) {
-                    if (subresult.Title == searchObject.Club) {
-                        searchObject.WikipediaURL = subresult.Url.ToString();
+            foreach (var term in SearchTerms) {
+                QueryResult results = wiki.Search(term.Club);
+                foreach (var possibleUrl in results.Search) {
+                    if (possibleUrl.Title.ToLower() == (term.Club.ToLower())) {
+                        term.WikipediaURL = possibleUrl.Url.AbsolutePath;
                     }
                 }
-                TermsLeftToAnalyze--;
             }
-            StringBuilder test = new StringBuilder();
-            foreach (var searchobj in SearchTerms) {
-                test.Append($"{searchobj.WikipediaURL} \n");
+            SaveToCsv();
+        }
+
+        public void SaveToCsv() {
+            var exportResults = new CsvExport();
+
+            foreach (var entry in SearchTerms) {
+                exportResults.AddRow();
+                exportResults["Club"] = entry.Club;
+                exportResults["Division"] = entry.Division;
+                exportResults["Nation"] = entry.Nation;
+                exportResults["Wikipedia URL"] = entry.WikipediaURL;
+
+                exportResults.ExportToFile(SaveFilePath);
             }
-            MessageBox.Show(test.ToString());
         }
     }
 }

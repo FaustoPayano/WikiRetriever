@@ -39,7 +39,7 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        
+
         <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
             <StackPanel Orientation="Horizontal">
                 <TextBox x:Name="InputListBox"
@@ -47,8 +47,10 @@
                          Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewMouseDown="UIElement_OnMouseDown" Text="{Binding FilePath}"
                          />
             </StackPanel>
-            <TextBox x:Name="SaveOutputBox"
-                     materialDesign:TextFieldAssist.Hint="Save Path" materialDesign:TextFieldAssist.HintOpacity=".5" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewMouseDown="SaveLocation_OnClick" Text="{Binding _outputSaveFilePath}"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBox x:Name="SaveOutputBox"
+                     materialDesign:TextFieldAssist.Hint="Save Path" materialDesign:TextFieldAssist.HintOpacity=".5" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewMouseDown="SaveLocation_OnClick" Text="{Binding SaveFilePath}"/>
+            </StackPanel>
         </StackPanel>
         <materialDesign:PopupBox Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}"
                                          PlacementMode="BottomAndAlignCentres"
@@ -63,7 +65,7 @@
                 </Button>
                 <Button ToolTip="Search the terms loaded into the program." Click="SearchAllTerms_OnClick">
                     <materialDesign:PackIcon Kind="CoffeeToGo"/>
-                    </Button>
+                </Button>
             </StackPanel>
         </materialDesign:PopupBox>
         <ListBox Grid.Row="2" Grid.Column="0" x:Name="SearchTermsListBox" MaxHeight="500">

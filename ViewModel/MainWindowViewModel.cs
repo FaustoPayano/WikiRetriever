@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Windows;
+using Jitbit.Utils;
 using WikipediaNET;
-using WikipediaNET.Enums;
 using WikipediaNET.Objects;
 using WikiRetriever.Annotations;
-using WikiRetriever.HelperClasses;
 using WikiRetriever.Model;
 
 namespace WikiRetriever.ViewModel {
@@ -21,6 +15,7 @@ namespace WikiRetriever.ViewModel {
         private FileInfo _file;
         private int _numberOfSearchTerms;
         private int _termsLeftToAnalyze;
+        private int _numberOfErrors;
 
         public MainWindowViewModel(string filePath,string savePath) {
             SearchTerms = GetSearchTermCollection(filePath);
@@ -96,6 +91,14 @@ namespace WikiRetriever.ViewModel {
             }
         }
 
+        public int NumberOfErrors {
+            get { return _numberOfErrors; }
+            set {
+                _numberOfErrors = value;
+                OnPropertyChanged(nameof(NumberOfErrors));
+            }
+        }
+
         public ObservableCollection<SearchTermModel> SearchTerms { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -111,26 +114,39 @@ namespace WikiRetriever.ViewModel {
             foreach (var term in SearchTerms) {
                 QueryResult results = wiki.Search(term.Club);
                 foreach (var possibleUrl in results.Search) {
-                    if (possibleUrl.Title.ToLower() == (term.Club.ToLower())) {
-                        term.WikipediaURL = possibleUrl.Url.AbsolutePath;
+                    if (possibleUrl.Title != null) {
+                        if (possibleUrl.Title.ToLower() == (term.Club.ToLower())) {
+                            term.WikipediaURL = possibleUrl.Url.AbsoluteUri;
+                        }
+                    }
+                    else {
+                        term.WikipediaURL = "No Valid URLS";
+                    }
+                    if (string.IsNullOrEmpty(term.WikipediaURL)) {
+                        term.WikipediaURL = "No Valid  URLS";
                     }
                 }
-            }
-            SaveToCsv();
+                TermsLeftToAnalyze--;
+            }   
+
+           SaveToCsv();
         }
 
         public void SaveToCsv() {
             var exportResults = new CsvExport();
 
             foreach (var entry in SearchTerms) {
+
                 exportResults.AddRow();
                 exportResults["Club"] = entry.Club;
                 exportResults["Division"] = entry.Division;
                 exportResults["Nation"] = entry.Nation;
                 exportResults["Wikipedia URL"] = entry.WikipediaURL;
+                
 
-                exportResults.ExportToFile(SaveFilePath);
+
             }
+            exportResults.ExportToFile(SaveFilePath);
         }
     }
 }

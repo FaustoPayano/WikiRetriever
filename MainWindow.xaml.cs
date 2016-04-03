@@ -1,22 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Automation.Peers;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.Win32;
 using WikiRetriever.ViewModel;
+using Path = System.IO.Path;
 
 namespace WikiRetriever {
     /// <summary>
@@ -59,7 +47,7 @@ namespace WikiRetriever {
         private void EstablishViewModel(object sender, DoWorkEventArgs e) {
             string tempSavePath = string.Empty;
             if (string.IsNullOrEmpty(sender as string)) {
-                tempSavePath = AppDomain.CurrentDomain.BaseDirectory;
+                tempSavePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "export.csv");
                 mainModel = new MainWindowViewModel(listFilepath, tempSavePath);
             }
             else {
@@ -102,6 +90,7 @@ namespace WikiRetriever {
         }
 
         private void completedSearchTerms(object sender, RunWorkerCompletedEventArgs e) {
+            MessageBox.Show("List search completed, file has been generated at save location.");
         }
 
         /// <summary>
@@ -119,7 +108,9 @@ namespace WikiRetriever {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void SaveLocation_OnClick(object sender, RoutedEventArgs e) {
-            var saveFileDialog = new SaveFileDialog();
+            var saveFileDialog = new SaveFileDialog() {
+                Filter = "CSV File (*.csv)|*.csv"
+            };
             if (saveFileDialog.ShowDialog() == true) {
                 mainModel.SaveFilePath = saveFileDialog.FileName;
             }

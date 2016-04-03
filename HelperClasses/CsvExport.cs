@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace WikiRetriever.HelperClasses
+namespace Jitbit.Utils
 {
 	/// <summary>
 	/// Simple CSV export
@@ -123,7 +123,7 @@ namespace WikiRetriever.HelperClasses
 		{
 			StringBuilder sb = new StringBuilder();
 
-			sb.AppendLine("sep=,");
+			sb.AppendLine(",");
 
 			// The header
 			sb.Append(string.Join(",", fields.ToArray()));
